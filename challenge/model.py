@@ -53,8 +53,9 @@ class DelayModel:
             or
             pd.DataFrame: features.
         """
-        data['min_diff'] = data.apply(self.get_min_diff, axis=1)
-        data['delay'] = np.where(data['min_diff'] > THRESHOLD_IN_MINUTES, 1, 0)
+        if target_column:
+            data['min_diff'] = data.apply(self.get_min_diff, axis=1)
+            data['delay'] = np.where(data['min_diff'] > THRESHOLD_IN_MINUTES, 1, 0)
 
         features = pd.concat([
             pd.get_dummies(data['OPERA'], prefix = 'OPERA'),
@@ -75,6 +76,10 @@ class DelayModel:
             "OPERA_Sky Airline",
             "OPERA_Copa Air"
         ]
+
+        for feature in top_10_features:
+            if feature not in features.columns:
+                features[feature] = 0
 
         features = features[top_10_features]
 
